@@ -1,0 +1,4 @@
+classifier,sample_ratio,n_train,mean,std,n_bootstrap,ci_95_low,ci_95_high
+random_forest,0.25,10,1.0,0.0,3,1.0,1.0
+random_forest,0.5,20,1.0,0.0,3,1.0,1.0
+random_forest,1.0,40,1.0,0.0,3,1.0,1.0
