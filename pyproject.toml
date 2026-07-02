@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vae-reconstruction-scarcity"
+version = "0.1.0"
+description = "VAE reconstruction, uncertainty, and downstream classification under biomedical image sample scarcity."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Dr. Rola Houhou" }
+]
+keywords = [
+    "vae",
+    "variational-autoencoder",
+    "biomedical-imaging",
+    "sample-scarcity",
+    "xray-classification",
+    "uncertainty",
+    "learning-curves"
+]
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "scipy",
+    "scikit-learn",
+    "scikit-image",
+    "PyYAML",
+    "Pillow",
+    "tqdm"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff"
+]
+
+deep-learning = [
+    "tensorflow"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 88

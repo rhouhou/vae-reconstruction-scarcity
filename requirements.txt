@@ -1,23 +1,9 @@
-# Core
-numpy>=1.23
-scipy>=1.9
-pandas>=1.5
-
-# Deep learning
-torch>=2.0
-torchvision>=0.15
-
-# Image processing & metrics
-scikit-image>=0.21
-opencv-python>=4.7
-
-# Experiment management
-pyyaml>=6.0
-tqdm>=4.65
-
-# Plotting
-matplotlib>=3.7
-seaborn>=0.12
-
-# Optional (useful later)
-einops>=0.6
+numpy
+pandas
+matplotlib
+scipy
+scikit-learn
+scikit-image
+PyYAML
+Pillow
+tqdm
