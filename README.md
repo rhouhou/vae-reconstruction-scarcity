@@ -258,6 +258,46 @@ The smoke tests are intended to verify that the pipeline runs end-to-end. They a
 
 ---
 
+## Current Runnable Pipeline
+
+The repository currently includes a lightweight downstream classification smoke test.
+
+This smoke test creates a small synthetic two-class image dataset, runs a bootstrap sample-size sweep using a Random Forest classifier, saves CSV results, and generates a sample-size curve.
+
+Run the smoke experiment:
+
+```bash
+python scripts/run_smoke_downstream.py \
+  --config configs/downstream_smoke.yaml \
+  --output-dir results/smoke_downstream
+```
+
+Generate the figure:
+
+```bash
+python scripts/make_smoke_downstream_figure.py \
+  --summary-csv results/smoke_downstream/downstream_smoke_summary.csv \
+  --output-path results/smoke_downstream/downstream_smoke_curve.png
+```
+
+Run tests:
+
+```bash
+python -m pytest -q
+```
+
+Expected outputs:
+
+```text
+results/smoke_downstream/downstream_smoke_results.csv
+results/smoke_downstream/downstream_smoke_summary.csv
+results/smoke_downstream/downstream_smoke_curve.png
+```
+
+The generated smoke outputs are ignored by Git because they are experiment artifacts.
+
+---
+
 ## Full Downstream Experiment
 
 A full sample-scarcity sweep can be run with:
