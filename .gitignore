@@ -36,6 +36,9 @@ results/*
 results/figures/*
 !results/figures/legacy/
 !results/figures/legacy/.gitkeep
+!results/figures/legacy/*.png
+!results/figures/legacy/*.jpg
+!results/figures/legacy/*.jpeg
 !results/metrics/
 !results/metrics/.gitkeep
 
