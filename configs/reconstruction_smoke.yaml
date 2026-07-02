@@ -1,0 +1,15 @@
+seed: 42
+
+data:
+  n_train: 8
+  n_val: 4
+  n_test: 4
+  image_size: [64, 64]
+  channels: 3
+
+vae:
+  latent_dim: 16
+  kl_weight: 1.0
+  batch_size: 2
+  epochs: 1
+  learning_rate: 0.0001
