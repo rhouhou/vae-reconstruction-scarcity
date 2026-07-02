@@ -94,29 +94,60 @@ Additional analyses include:
 
 ## Preliminary Legacy Results
 
-This project builds on an earlier exploratory VAE experiment using biomedical X-ray images.
+This repository includes preliminary figures from an earlier exploratory X-ray VAE experiment.
 
-In the earlier version, a VAE was trained to reconstruct X-ray images, and downstream classifiers were compared on:
+In that earlier version, a VAE was trained to reconstruct biomedical X-ray images. Downstream classifiers were then trained and evaluated on:
 
-- original X-ray images
-- VAE-reconstructed X-ray images
+- original images
+- VAE-reconstructed images
 
-Preliminary results suggested that VAE-reconstructed images may improve classifier stability in some low-sample regimes.
+The goal was to study whether VAE reconstruction could improve downstream classification stability under limited training data.
 
-These results should be treated as exploratory until they are reproduced using the cleaned and reproducible experiment pipeline in this repository.
+The preliminary results suggested that reconstructed images may improve classifier performance or stability in some low-sample regimes. However, these results should be interpreted carefully because they come from an earlier exploratory pipeline.
 
-Example legacy figures may include:
+The cleaned implementation in this repository is intended to reproduce and extend those experiments with:
+
+- configurable paths
+- reusable modules
+- smoke tests
+- clearer metrics
+- bootstrap confidence intervals
+- reproducible experiment scripts
+
+### Legacy Figures
+
+| Figure | Description |
+|---|---|
+| `Balance_accuracy_testing_checker.png` | Preliminary balanced accuracy comparison for one dataset/task |
+| `Balance_accuracy_testing_skin.png` | Preliminary balanced accuracy comparison for another dataset/task |
+| `box_plot_both.png` | Boxplot comparing original-image and VAE-reconstructed-image classifier scores |
+| `CNN_LearningCurve.png` | CNN learning curve using original images |
+| `CNN_VAE_LearningCurve.png` | CNN learning curve using VAE-reconstructed images |
+| `CNN_samplesize_p-values.png` | Statistical comparison across sample-size ratios |
+
+### Example Legacy Outputs
+
+#### Original vs VAE-reconstructed classifier performance
+
+![Boxplot comparing original and VAE-reconstructed images](results/figures/legacy/box_plot_both.png)
+
+#### CNN learning curve on original images
+
+![CNN learning curve](results/figures/legacy/CNN_LearningCurve.png)
+
+#### CNN learning curve on VAE-reconstructed images
+
+![CNN VAE learning curve](results/figures/legacy/CNN_VAE_LearningCurve.png)
+
+### Legacy Code
+
+The legacy scripts are stored in:
 
 ```text
-results/figures/legacy/balance_accuracy_testing_checker.png
-results/figures/legacy/balance_accuracy_testing_skin.png
-results/figures/legacy/box_plot_both.png
-results/figures/legacy/cnn_learning_curve.png
-results/figures/legacy/cnn_samplesize_pvalues.png
-results/figures/legacy/cnn_vae_learning_curve.png
+legacy/old_xray_vae/
 ```
 
-The legacy experiments motivated the current project structure. Final claims should be based only on reproducible runs from the cleaned pipeline.
+These files are kept for transparency and historical reference. They may contain hard-coded local or Colab paths and are not the recommended entry point for running the cleaned project.
 
 ---
 
