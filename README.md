@@ -1,5 +1,7 @@
 # VAE Reconstruction Under Sample Scarcity
 
+![CI](https://github.com/rhouhou/vae-reconstruction-scarcity/actions/workflows/ci.yml/badge.svg)
+
 This repository studies how variational autoencoder (VAE) reconstruction behaves when training data are limited, and how VAE-reconstructed biomedical images affect downstream classification under sample scarcity.
 
 The project combines two related research directions:
