@@ -216,6 +216,7 @@ Additional documentation is available in:
 
 - [Dataset notes](docs/dataset.md)
 - [Experiment workflows](docs/experiments.md)
+- [Final experiment protocol](docs/final_protocol.md)
 
 ---
 

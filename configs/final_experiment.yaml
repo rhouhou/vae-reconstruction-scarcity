@@ -1,0 +1,63 @@
+project:
+  name: vae-reconstruction-scarcity
+  stage: final_multiseed_experiment
+
+seeds:
+  - 42
+  - 123
+  - 777
+  - 2024
+  - 2025
+
+data:
+  data_zip: data/raw/test.zip
+  image_size: [64, 64]
+  classes:
+    - COVID
+    - NORMAL
+    - PNEUMONIA
+  root_dir: null
+
+experiment:
+  sample_ratios: [0.05, 0.10, 0.20, 0.40, 0.60, 0.80, 1.00]
+  n_bootstrap: 20
+  classifier: random_forest
+  primary_metric: balanced_accuracy
+
+outputs:
+  output_root: results/final_runs
+  analysis_dir: results/final_analysis
+  figure_dir: results/figures/final
+
+methods:
+  original:
+    label: Original
+    kind: original
+    config: configs/downstream_xray_original.yaml
+    output_subdir: downstream_xray_original
+    summary_file: original_downstream_summary.csv
+    results_file: original_downstream_results.csv
+
+  skip_vae:
+    label: Skip VAE
+    kind: reconstruction
+    config: configs/downstream_xray_skip_vae.yaml
+    output_subdir: downstream_xray_skip_vae
+    summary_file: reconstruction_downstream_summary.csv
+    results_file: reconstruction_downstream_results.csv
+
+  plain_vae:
+    label: Plain VAE
+    kind: reconstruction
+    config: configs/downstream_xray_plain_vae.yaml
+    output_subdir: downstream_xray_plain_vae
+    summary_file: reconstruction_downstream_summary.csv
+    results_file: reconstruction_downstream_results.csv
+
+  denoising_ae:
+    label: Denoising AE
+    kind: reconstruction
+    config: configs/downstream_xray_denoising_ae.yaml
+    output_subdir: downstream_xray_denoising_ae
+    summary_file: reconstruction_downstream_summary.csv
+    results_file: reconstruction_downstream_results.csv
