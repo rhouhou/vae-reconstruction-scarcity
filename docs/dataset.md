@@ -175,7 +175,7 @@ python -m pip install -e ".[deep-learning]"
 Then run:
 
 ```bash
-python scripts/run_downstream_xray_vae.py \
+python scripts/run_downstream_xray_reconstruction.py \
   --config configs/downstream_xray_vae.yaml \
   --data-zip data/raw/test.zip \
   --output-dir results/downstream_xray_vae
