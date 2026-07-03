@@ -21,8 +21,8 @@ data/
 *.zip
 
 # Model checkpoints and large model files
-models/
-checkpoints/
+/models/
+/checkpoints/
 *.h5
 *.keras
 *.ckpt
