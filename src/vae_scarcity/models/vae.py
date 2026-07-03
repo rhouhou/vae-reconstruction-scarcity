@@ -201,3 +201,157 @@ def build_skip_vae(
         kl_weight=kl_weight,
         name="skip_vae",
     )
+
+class PlainVAE(BaseModel):
+    """Plain convolutional VAE without skip connections."""
+
+    def __init__(
+        self,
+        encoder: Any,
+        decoder: Any,
+        image_shape: tuple[int, int, int] = (64, 64, 3),
+        kl_weight: float = 1.0,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize the plain VAE."""
+        _require_tensorflow()
+        super().__init__(**kwargs)
+
+        self.encoder = encoder
+        self.decoder = decoder
+        self.image_shape = image_shape
+        self.kl_weight = kl_weight
+
+    def call(self, inputs: Any) -> Any:
+        """Run forward pass and add KL loss."""
+        z_mean, z_log_var, z = self.encoder(inputs)
+        reconstructed = self.decoder(z)
+
+        kl_loss = -0.5 * tf.reduce_sum(
+            1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var),
+            axis=-1,
+        )
+
+        normalization = float(
+            self.image_shape[0] * self.image_shape[1] * self.image_shape[2]
+        )
+
+        self.add_loss(self.kl_weight * tf.reduce_mean(kl_loss) / normalization)
+
+        return reconstructed
+
+
+def build_plain_encoder(
+    image_shape: tuple[int, int, int] = (64, 64, 3),
+    latent_dim: int = 256,
+) -> Any:
+    """Build a convolutional VAE encoder without skip connections."""
+    _require_tensorflow()
+
+    layers = tf.keras.layers
+    models = tf.keras.models
+
+    encoder_inputs = layers.Input(shape=image_shape)
+
+    x = layers.Conv2D(32, 3, strides=2, padding="same")(encoder_inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2D(64, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2D(128, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2D(256, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Flatten()(x)
+
+    z_mean = layers.Dense(latent_dim, name="z_mean")(x)
+    z_log_var = layers.Dense(latent_dim, name="z_log_var")(x)
+    z = Sampling()((z_mean, z_log_var))
+
+    return models.Model(
+        encoder_inputs,
+        [z_mean, z_log_var, z],
+        name="plain_encoder",
+    )
+
+
+def build_plain_decoder(
+    image_shape: tuple[int, int, int] = (64, 64, 3),
+    latent_dim: int = 256,
+) -> Any:
+    """Build a convolutional VAE decoder without skip connections."""
+    _require_tensorflow()
+
+    layers = tf.keras.layers
+    models = tf.keras.models
+
+    channels = image_shape[-1]
+
+    latent_inputs = layers.Input(shape=(latent_dim,))
+
+    x = layers.Dense(4 * 4 * 256, activation="relu")(latent_inputs)
+    x = layers.Reshape((4, 4, 256))(x)
+
+    x = layers.Conv2DTranspose(128, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2DTranspose(64, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2DTranspose(32, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    x = layers.Conv2DTranspose(32, 3, strides=2, padding="same")(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.ReLU()(x)
+
+    decoder_outputs = layers.Conv2D(
+        channels,
+        3,
+        activation="sigmoid",
+        padding="same",
+        name="reconstruction",
+    )(x)
+
+    return models.Model(
+        latent_inputs,
+        decoder_outputs,
+        name="plain_decoder",
+    )
+
+
+def build_plain_vae(
+    image_shape: tuple[int, int, int] = (64, 64, 3),
+    latent_dim: int = 256,
+    kl_weight: float = 1.0,
+) -> PlainVAE:
+    """Build a plain convolutional VAE without skip connections."""
+    _require_tensorflow()
+
+    encoder = build_plain_encoder(
+        image_shape=image_shape,
+        latent_dim=latent_dim,
+    )
+
+    decoder = build_plain_decoder(
+        image_shape=image_shape,
+        latent_dim=latent_dim,
+    )
+
+    return PlainVAE(
+        encoder=encoder,
+        decoder=decoder,
+        image_shape=image_shape,
+        kl_weight=kl_weight,
+        name="plain_vae",
+    )
