@@ -127,7 +127,7 @@ Run:
 
 ```bash
 python scripts/run_downstream_xray_reconstruction.py \
-  --config configs/downstream_xray_vae.yaml \
+  --config configs/downstream_xray_skip_vae.yaml \
   --data-zip data/raw/test.zip \
   --output-dir results/downstream_xray_vae
 ```

@@ -53,7 +53,7 @@ The real X-ray workflows use these config files:
 
 ```text
 configs/downstream_xray_original.yaml
-configs/downstream_xray_vae.yaml
+configs/downstream_xray_skip_vae.yaml
 ```
 
 Example configuration:
@@ -176,7 +176,7 @@ Then run:
 
 ```bash
 python scripts/run_downstream_xray_reconstruction.py \
-  --config configs/downstream_xray_vae.yaml \
+  --config configs/downstream_xray_skip_vae.yaml \
   --data-zip data/raw/test.zip \
   --output-dir results/downstream_xray_vae
 ```
