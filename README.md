@@ -206,6 +206,15 @@ Datasets, model checkpoints, and generated experiment outputs are ignored by Git
 
 ---
 
+## Documentation
+
+Additional documentation is available in:
+
+- [Dataset notes](docs/dataset.md)
+- [Experiment workflows](docs/experiments.md)
+
+---
+
 ## Reproducible Workflows
 
 ### 1. Synthetic downstream smoke test
