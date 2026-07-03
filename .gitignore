@@ -34,11 +34,19 @@ data/
 results/*
 !results/figures/
 results/figures/*
+
 !results/figures/legacy/
 !results/figures/legacy/.gitkeep
 !results/figures/legacy/*.png
 !results/figures/legacy/*.jpg
 !results/figures/legacy/*.jpeg
+
+!results/figures/final/
+!results/figures/final/.gitkeep
+!results/figures/final/*.png
+!results/figures/final/*.jpg
+!results/figures/final/*.jpeg
+
 !results/metrics/
 !results/metrics/.gitkeep
 
