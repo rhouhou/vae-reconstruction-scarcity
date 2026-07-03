@@ -21,6 +21,8 @@ src/vae_scarcity/experiments/__init__.py
 src/vae_scarcity/models/__init__.py
 src/vae_scarcity/models/classifiers.py
 src/vae_scarcity/models/vae.py
+src/vae_scarcity/training/__init__.py
+src/vae_scarcity/training/vae_training.py
 tests/test_classifiers.py
 tests/test_downstream.py
 tests/test_import.py
@@ -30,3 +32,4 @@ tests/test_reconstruction_metrics.py
 tests/test_sample_size.py
 tests/test_splits.py
 tests/test_vae.py
+tests/test_vae_training.py
