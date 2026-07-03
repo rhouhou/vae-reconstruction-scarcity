@@ -1,0 +1,31 @@
+seed: 42
+
+data:
+  image_size: [64, 64]
+  classes:
+    - COVID
+    - NORMAL
+    - PNEUMONIA
+  root_dir: null
+  test_size: 0.20
+  val_size: 0.10
+  normalize: true
+  color_mode: rgb
+
+vae:
+  model_type: plain_vae
+  latent_dim: 64
+  kl_weight: 1.0
+  batch_size: 32
+  epochs: 5
+  learning_rate: 0.0001
+  patience: 3
+
+experiment:
+  sample_ratios: [0.05, 0.10, 0.20, 0.40, 0.60, 0.80, 1.00]
+  n_bootstrap: 20
+  classifier: random_forest
+
+classifier:
+  n_estimators: 100
+  n_jobs: -1
