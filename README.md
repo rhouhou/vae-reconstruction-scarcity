@@ -99,7 +99,7 @@ vae-reconstruction-scarcity/
 │       │   ├── classifiers.py
 │       │   └── vae.py
 │       ├── training/
-│       │   └── vae_training.py
+│       │   └── reconstruction_training.py
 │       └── plotting.py
 ├── tests/
 ├── README.md

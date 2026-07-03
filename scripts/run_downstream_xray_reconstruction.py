@@ -22,7 +22,10 @@ from vae_scarcity.evaluation.sample_size import (
     summarize_sample_size_sweep,
 )
 from vae_scarcity.models.reconstruction import build_reconstruction_model
-from vae_scarcity.training.vae_training import reconstruct_images, train_vae
+from vae_scarcity.training.reconstruction_training import (
+    reconstruct_images,
+    train_reconstruction_model,
+)
 
 
 def load_config(config_path: str | Path) -> dict[str, Any]:
@@ -108,7 +111,7 @@ def main() -> None:
         noise_stddev=float(reconstruction_config.get("noise_stddev", 0.10)),
     )
 
-    history = train_vae(
+    history = train_reconstruction_model(
         model=model,
         X_train=X_train,
         X_val=X_val,
