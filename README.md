@@ -42,24 +42,25 @@ Implemented:
 - Downstream classification metrics
 - Random Forest and SVM classifier builders
 - Bootstrap sample-size sweep
-- Skip-connected VAE model
-- VAE training and reconstruction utilities
+- Skip-connected VAE reconstruction model
+- Plain VAE reconstruction model
+- Denoising autoencoder reconstruction model
+- Generic reconstruction model builder
 - Synthetic downstream smoke test
 - Synthetic reconstruction smoke test
 - Real X-ray original-image baseline script
-- Real X-ray VAE-reconstructed pipeline script
-- Original vs VAE comparison script
+- Real X-ray reconstruction-based downstream pipeline
+- Four-method reconstruction comparison script
 - GitHub Actions CI
 - Legacy code and preliminary legacy figures
 
-Planned:
+Future extensions:
 
-- Plain VAE without skip connections
-- Denoising autoencoder baseline
 - CNN classifier baseline
-- Cleaner final experiment table
-- Final reproducible result figures
+- More random seeds
+- More VAE training epochs
 - More extensive statistical analysis
+- Calibration and error analysis
 
 ---
 
@@ -70,7 +71,9 @@ vae-reconstruction-scarcity/
 ├── configs/
 │   ├── downstream_smoke.yaml
 │   ├── downstream_xray_original.yaml
-│   ├── downstream_xray_vae.yaml
+│   ├── downstream_xray_skip_vae.yaml
+│   ├── downstream_xray_plain_vae.yaml
+│   ├── downstream_xray_denoising_ae.yaml
 │   └── reconstruction_smoke.yaml
 ├── legacy/
 │   └── old_xray_vae/
@@ -80,6 +83,7 @@ vae-reconstruction-scarcity/
 │   └── metrics/
 ├── scripts/
 │   ├── compare_original_vs_vae.py
+│   ├── compare_reconstruction_methods.py
 │   ├── make_smoke_downstream_figure.py
 │   ├── plot_sample_size_curve.py
 │   ├── run_downstream_xray_original.py

@@ -192,28 +192,36 @@ results/comparison_original_vs_vae/original_vs_vae_curve.png
 
 ---
 
-## Current Implemented Comparison
+---
 
-| Pipeline | Description |
+## Current Comparison Methods
+
+The current implemented comparison includes four methods:
+
+| Method | Description |
 |---|---|
 | Original images | Classifier trained directly on original X-ray images |
-| Skip-connected VAE | Images reconstructed using a skip-connected VAE before classification |
+| Skip VAE | Classifier trained on images reconstructed with a skip-connected VAE |
+| Plain VAE | Classifier trained on images reconstructed with a plain VAE without skip connections |
+| Denoising AE | Classifier trained on images reconstructed with a denoising autoencoder |
+
+The classifier is kept fixed across methods so that the comparison focuses on the reconstruction strategy.
 
 ---
 
-## Planned Baselines
+## Future Extensions
 
-Future experiments should include:
+Future experiments may include:
 
-| Pipeline | Purpose |
+| Extension | Purpose |
 |---|---|
-| Plain VAE without skip connections | Tests whether latent compression alone helps |
-| Skip-connected VAE | Tests the current reconstruction model |
-| Denoising autoencoder | Tests whether general denoising/reconstruction helps |
-| Raw-image classifier | Baseline without reconstruction |
-| CNN classifier | Deep classifier comparison |
+| CNN classifier | Compare whether the reconstruction effect also appears with a deep classifier |
+| More random seeds | Improve statistical robustness |
+| More VAE training epochs | Test whether stronger reconstruction improves downstream performance |
+| Calibration analysis | Check whether reconstructed-image classifiers are better calibrated |
+| Error analysis | Identify which classes benefit or degrade after reconstruction |
 
-These baselines are important because they help separate the effect of VAE latent compression, skip connections, and general denoising.
+These extensions are not required for the current four-method comparison.
 
 ---
 

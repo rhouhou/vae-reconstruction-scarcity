@@ -54,6 +54,8 @@ The real X-ray workflows use these config files:
 ```text
 configs/downstream_xray_original.yaml
 configs/downstream_xray_skip_vae.yaml
+configs/downstream_xray_plain_vae.yaml
+configs/downstream_xray_denoising_ae.yaml
 ```
 
 Example configuration:
