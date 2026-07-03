@@ -1,4 +1,4 @@
-"""Compare original-image and VAE-reconstructed downstream results."""
+"""Compare original-image and Reconstruction-reconstructed downstream results."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from scipy.stats import mannwhitneyu
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Compare original vs VAE-reconstructed downstream results."
+        description="Compare original vs Reconstruction-reconstructed downstream results."
     )
     parser.add_argument(
         "--original-results",
@@ -23,10 +23,10 @@ def parse_args() -> argparse.Namespace:
         help="Raw bootstrap results for original images.",
     )
     parser.add_argument(
-        "--vae-results",
+        "--reconstruction-results",
         type=str,
-        default="results/downstream_xray_skip_vae/reconstruction_downstream_results.csv",
-        help="Raw bootstrap results for VAE-reconstructed images.",
+        default="results/downstream_xray_skip_reconstruction/reconstruction_downstream_results.csv",
+        help="Raw bootstrap results for Reconstruction-reconstructed images.",
     )
     parser.add_argument(
         "--original-summary",
@@ -35,15 +35,15 @@ def parse_args() -> argparse.Namespace:
         help="Summary results for original images.",
     )
     parser.add_argument(
-        "--vae-summary",
+        "--reconstruction-summary",
         type=str,
-        default="results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv",
-        help="Summary results for VAE-reconstructed images.",
+        default="results/downstream_xray_skip_reconstruction/reconstruction_downstream_summary.csv",
+        help="Summary results for Reconstruction-reconstructed images.",
     )
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="results/comparison_original_vs_vae",
+        default="results/comparison_original_vs_reconstruction",
         help="Directory where comparison outputs will be saved.",
     )
     return parser.parse_args()
@@ -61,15 +61,15 @@ def _load_csv(path: str | Path) -> pd.DataFrame:
 
 def compare_by_sample_ratio(
     original_results: pd.DataFrame,
-    vae_results: pd.DataFrame,
+    reconstruction_results: pd.DataFrame,
     score_column: str = "balanced_accuracy",
 ) -> pd.DataFrame:
-    """Compare original and VAE results per sample-size ratio."""
+    """Compare original and Reconstruction results per sample-size ratio."""
     required_columns = {"sample_ratio", score_column}
 
     for name, table in {
         "original_results": original_results,
-        "vae_results": vae_results,
+        "reconstruction_results": reconstruction_results,
     }.items():
         missing = required_columns - set(table.columns)
         if missing:
@@ -79,7 +79,7 @@ def compare_by_sample_ratio(
 
     sample_ratios = sorted(
         set(original_results["sample_ratio"]).intersection(
-            set(vae_results["sample_ratio"])
+            set(reconstruction_results["sample_ratio"])
         )
     )
 
@@ -89,32 +89,32 @@ def compare_by_sample_ratio(
             score_column,
         ].to_numpy()
 
-        vae_scores = vae_results.loc[
-            vae_results["sample_ratio"] == ratio,
+        reconstruction_scores = reconstruction_results.loc[
+            reconstruction_results["sample_ratio"] == ratio,
             score_column,
         ].to_numpy()
 
         statistic, p_value = mannwhitneyu(
             original_scores,
-            vae_scores,
+            reconstruction_scores,
             alternative="two-sided",
         )
 
         original_mean = float(np.mean(original_scores))
-        vae_mean = float(np.mean(vae_scores))
-        mean_difference = vae_mean - original_mean
+        reconstruction_mean = float(np.mean(reconstruction_scores))
+        mean_difference = reconstruction_mean - original_mean
 
         rows.append(
             {
                 "sample_ratio": ratio,
                 "original_mean": original_mean,
-                "vae_mean": vae_mean,
-                "vae_minus_original": mean_difference,
+                "reconstruction_mean": reconstruction_mean,
+                "reconstruction_minus_original": mean_difference,
                 "original_std": float(np.std(original_scores, ddof=1)),
-                "vae_std": float(np.std(vae_scores, ddof=1)),
+                "reconstruction_std": float(np.std(reconstruction_scores, ddof=1)),
                 "p_value_mannwhitneyu": float(p_value),
                 "n_original": int(len(original_scores)),
-                "n_vae": int(len(vae_scores)),
+                "n_reconstruction": int(len(reconstruction_scores)),
             }
         )
 
@@ -123,10 +123,10 @@ def compare_by_sample_ratio(
 
 def plot_comparison_curve(
     original_summary: pd.DataFrame,
-    vae_summary: pd.DataFrame,
+    reconstruction_summary: pd.DataFrame,
     output_path: str | Path,
 ) -> Path:
-    """Plot original vs VAE-reconstructed sample-size curves."""
+    """Plot original vs Reconstruction-reconstructed sample-size curves."""
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -134,14 +134,14 @@ def plot_comparison_curve(
 
     for name, table in {
         "original_summary": original_summary,
-        "vae_summary": vae_summary,
+        "reconstruction_summary": reconstruction_summary,
     }.items():
         missing = required_columns - set(table.columns)
         if missing:
             raise ValueError(f"{name} missing required columns: {sorted(missing)}")
 
     original_summary = original_summary.sort_values("sample_ratio")
-    vae_summary = vae_summary.sort_values("sample_ratio")
+    reconstruction_summary = reconstruction_summary.sort_values("sample_ratio")
 
     plt.figure(figsize=(8, 5))
 
@@ -159,21 +159,21 @@ def plot_comparison_curve(
     )
 
     plt.plot(
-        vae_summary["sample_ratio"],
-        vae_summary["mean"],
+        reconstruction_summary["sample_ratio"],
+        reconstruction_summary["mean"],
         marker="o",
-        label="VAE-reconstructed images",
+        label="Reconstruction-reconstructed images",
     )
     plt.fill_between(
-        vae_summary["sample_ratio"],
-        vae_summary["ci_95_low"],
-        vae_summary["ci_95_high"],
+        reconstruction_summary["sample_ratio"],
+        reconstruction_summary["ci_95_low"],
+        reconstruction_summary["ci_95_high"],
         alpha=0.20,
     )
 
     plt.xlabel("Training sample-size ratio")
     plt.ylabel("Balanced accuracy")
-    plt.title("Original vs VAE-reconstructed X-ray classification")
+    plt.title("Original vs Reconstruction-reconstructed X-ray classification")
     plt.ylim(0.0, 1.05)
     plt.grid(True, alpha=0.3)
     plt.legend()
@@ -192,38 +192,38 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     original_results = _load_csv(args.original_results)
-    vae_results = _load_csv(args.vae_results)
+    reconstruction_results = _load_csv(args.reconstruction_results)
     original_summary = _load_csv(args.original_summary)
-    vae_summary = _load_csv(args.vae_summary)
+    reconstruction_summary = _load_csv(args.reconstruction_summary)
 
     original_results = original_results.copy()
-    vae_results = vae_results.copy()
+    reconstruction_results = reconstruction_results.copy()
     original_summary = original_summary.copy()
-    vae_summary = vae_summary.copy()
+    reconstruction_summary = reconstruction_summary.copy()
 
     original_results["pipeline"] = "original"
-    vae_results["pipeline"] = "vae_reconstructed"
+    reconstruction_results["pipeline"] = "reconstruction_reconstructed"
     original_summary["pipeline"] = "original"
-    vae_summary["pipeline"] = "vae_reconstructed"
+    reconstruction_summary["pipeline"] = "reconstruction_reconstructed"
 
     combined_results = pd.concat(
-        [original_results, vae_results],
+        [original_results, reconstruction_results],
         ignore_index=True,
     )
     combined_summary = pd.concat(
-        [original_summary, vae_summary],
+        [original_summary, reconstruction_summary],
         ignore_index=True,
     )
 
     comparison = compare_by_sample_ratio(
         original_results=original_results,
-        vae_results=vae_results,
+        reconstruction_results=reconstruction_results,
     )
 
     combined_results_path = output_dir / "combined_downstream_results.csv"
     combined_summary_path = output_dir / "combined_downstream_summary.csv"
     comparison_path = output_dir / "comparison_by_sample_ratio.csv"
-    figure_path = output_dir / "original_vs_vae_curve.png"
+    figure_path = output_dir / "original_vs_reconstruction_curve.png"
 
     combined_results.to_csv(combined_results_path, index=False)
     combined_summary.to_csv(combined_summary_path, index=False)
@@ -231,11 +231,11 @@ def main() -> None:
 
     saved_figure = plot_comparison_curve(
         original_summary=original_summary,
-        vae_summary=vae_summary,
+        reconstruction_summary=reconstruction_summary,
         output_path=figure_path,
     )
 
-    print("Original vs VAE comparison completed.")
+    print("Original vs Reconstruction comparison completed.")
     print(f"Saved combined raw results to: {combined_results_path}")
     print(f"Saved combined summary to: {combined_summary_path}")
     print(f"Saved comparison table to: {comparison_path}")

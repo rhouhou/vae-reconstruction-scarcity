@@ -82,7 +82,7 @@ vae-reconstruction-scarcity/
 │   │   └── legacy/
 │   └── metrics/
 ├── scripts/
-│   ├── compare_original_vs_vae.py
+│   ├── compare_original_vs_reconstruction.py
 │   ├── compare_reconstruction_methods.py
 │   ├── make_smoke_downstream_figure.py
 │   ├── plot_sample_size_curve.py
@@ -346,26 +346,26 @@ python scripts/plot_sample_size_curve.py \
 
 ---
 
-### 5. Original vs VAE comparison
+### 5. Original vs reconstruction comparison
 
 After running both the original-image and VAE-reconstructed pipelines, compare them:
 
 ```bash
-python scripts/compare_original_vs_vae.py \
+python scripts/compare_original_vs_reconstruction.py \
   --original-results results/downstream_xray_original/original_downstream_results.csv \
-  --vae-results results/downstream_xray_skip_vae/reconstruction_downstream_results.csv \
+  --reconstruction-results results/downstream_xray_skip_vae/reconstruction_downstream_results.csv \
   --original-summary results/downstream_xray_original/original_downstream_summary.csv \
-  --vae-summary results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
-  --output-dir results/comparison_original_vs_vae
+  --reconstruction-summary results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
+  --output-dir results/comparison_original_vs_reconstruction
 ```
 
 Expected outputs:
 
 ```text
-results/comparison_original_vs_vae/combined_downstream_results.csv
-results/comparison_original_vs_vae/combined_downstream_summary.csv
-results/comparison_original_vs_vae/comparison_by_sample_ratio.csv
-results/comparison_original_vs_vae/original_vs_vae_curve.png
+results/comparison_original_vs_reconstruction/combined_downstream_results.csv
+results/comparison_original_vs_reconstruction/combined_downstream_summary.csv
+results/comparison_original_vs_reconstruction/comparison_by_sample_ratio.csv
+results/comparison_original_vs_reconstruction/original_vs_reconstruction_curve.png
 ```
 
 ---
@@ -441,7 +441,7 @@ These results are exploratory and should not be treated as final scientific evid
 
 ### Example Legacy Outputs
 
-#### Original vs VAE-reconstructed classifier performance
+#### Original vs reconstruction-reconstructed classifier performance
 
 ![Boxplot comparing original and VAE-reconstructed images](results/figures/legacy/box_plot_both.png)
 

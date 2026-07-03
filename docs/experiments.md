@@ -160,17 +160,17 @@ python scripts/plot_sample_size_curve.py \
 
 ---
 
-## 5. Original vs VAE Comparison
+## 5. Original vs reconstruction Comparison
 
 After running both X-ray workflows, compare original-image and VAE-reconstructed results.
 
 ```bash
-python scripts/compare_original_vs_vae.py \
+python scripts/compare_original_vs_reconstruction.py \
   --original-results results/downstream_xray_original/original_downstream_results.csv \
-  --vae-results results/downstream_xray_skip_vae/reconstruction_downstream_results.csv \
+  --reconstruction-results results/downstream_xray_skip_vae/reconstruction_downstream_results.csv \
   --original-summary results/downstream_xray_original/original_downstream_summary.csv \
-  --vae-summary results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
-  --output-dir results/comparison_original_vs_vae
+  --reconstruction-summary results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
+  --output-dir results/comparison_original_vs_reconstruction
 ```
 
 Purpose:
@@ -184,10 +184,10 @@ Purpose:
 Expected outputs:
 
 ```text
-results/comparison_original_vs_vae/combined_downstream_results.csv
-results/comparison_original_vs_vae/combined_downstream_summary.csv
-results/comparison_original_vs_vae/comparison_by_sample_ratio.csv
-results/comparison_original_vs_vae/original_vs_vae_curve.png
+results/comparison_original_vs_reconstruction/combined_downstream_results.csv
+results/comparison_original_vs_reconstruction/combined_downstream_summary.csv
+results/comparison_original_vs_reconstruction/comparison_by_sample_ratio.csv
+results/comparison_original_vs_reconstruction/original_vs_reconstruction_curve.png
 ```
 
 ---
