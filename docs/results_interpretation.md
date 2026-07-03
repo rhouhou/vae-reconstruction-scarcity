@@ -74,23 +74,6 @@ This design allows the experiment to measure not only final classifier performan
 
 In other words, the experiment evaluates sample efficiency: whether a method performs better in low-data regimes and whether it maintains performance as the available training set grows.
 
-## Sample-Efficiency Perspective
-
-Because this project focuses on sample scarcity, the main question is not only which method achieves the highest final score, but also how much labeled training data is needed to reach near-final performance.
-
-The learning curves suggest that balanced accuracy increases with training sample size and begins to plateau at higher sample-size ratios. This means that using a reduced fraction of the training set may achieve performance close to the full-data setting.
-
-This should be interpreted as a sample-efficiency question rather than only a superiority question.
-
-A reconstruction method does not need to significantly outperform the original-image baseline to be scientifically interesting. It may still be useful if it preserves performance in low-data regimes or reaches near-full-data performance with fewer labeled examples.
-
-Future analysis should therefore quantify:
-
-- the performance gap between 60% and 100% training data
-- the minimum sample-size ratio needed to reach 95% of full-data performance
-- whether reduced-data performance is practically equivalent to full-data performance
-- whether reconstruction methods help more strongly in the lowest-data regimes
-
 ## Final Multi-Seed Learning Curve
 
 The final multi-seed comparison is shown below.
@@ -109,6 +92,29 @@ Sample-efficiency AUC summarizes the downstream learning curve across all sample
 | Skip VAE | 0.8655 | 0.0087 | 0.8547–0.8763 | 5 |
 | Denoising AE | 0.8552 | 0.0098 | 0.8430–0.8674 | 5 |
 | Plain VAE | 0.7470 | 0.0231 | 0.7183–0.7758 | 5 |
+
+## Sample-Size Efficiency Analysis
+
+Because this project focuses on sample scarcity, an important question is not only which method performs best at full data, but also how much labeled training data is needed to reach near-full-data performance.
+
+The table below compares each method against its own full-data performance.
+
+| Method | Full-data balanced accuracy | 40% data | Loss at 40% | 60% data | Loss at 60% | 80% data | Loss at 80% |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Original | 0.9344 | 0.9205 | 0.0139 | 0.9284 | 0.0060 | 0.9320 | 0.0024 |
+| Skip VAE | 0.9285 | 0.9124 | 0.0161 | 0.9209 | 0.0075 | 0.9250 | 0.0034 |
+| Denoising AE | 0.9161 | 0.9029 | 0.0133 | 0.9094 | 0.0067 | 0.9131 | 0.0030 |
+| Plain VAE | 0.7951 | 0.7880 | 0.0070 | 0.7910 | 0.0041 | 0.7926 | 0.0025 |
+
+For Original, Skip VAE, and Denoising AE, using 60% of the training data reached more than 99% of the corresponding full-data performance.
+
+This means that approximately 2,195 training images achieved performance close to using all 3,659 training images.
+
+At 40% of the training data, corresponding to approximately 1,464 training images, the strongest methods were still within approximately 1.3–1.6 balanced-accuracy points of their full-data performance.
+
+This suggests that downstream classification performance begins to plateau before the full training set is used. The 40–60% training-sample regime is therefore an important region for further sample-efficiency analysis.
+
+The Plain VAE also reaches near-full-data performance early, but this should be interpreted cautiously because its full-data performance is substantially lower than the other methods. Its early plateau likely reflects limited model utility rather than superior sample efficiency.
 
 ## Main Result
 
@@ -150,7 +156,11 @@ Skip-connected VAE and denoising autoencoder reconstructions preserved downstrea
 
 The plain VAE showed a consistent and substantial reduction in balanced accuracy. This suggests that the plain VAE bottleneck may remove or distort task-relevant image information needed by the downstream classifier.
 
-The sample-size trend is also important. All methods improved as more labeled training images became available, but reconstruction did not change the overall sample-scarcity pattern enough to outperform the original images. This means the reconstruction methods did not provide a clear sample-efficiency advantage in this experiment.
+The sample-size trend is also important. All methods improved as more labeled training images became available, but reconstruction did not change the overall sample-scarcity pattern enough to outperform the original images.
+
+At the same time, the learning curves show that the strongest methods reached near-full-data performance before using the full training split. This suggests that the dataset and classifier may enter a performance plateau around the 40–60% training-sample regime.
+
+Therefore, the project should not be interpreted only as a question of whether reconstruction improves final accuracy. It also provides a useful framework for analyzing how much labeled data is needed to reach practically similar downstream performance.
 
 ## Important Caution
 
@@ -158,15 +168,17 @@ The confidence intervals for Original, Skip VAE, and Denoising AE overlap. There
 
 However, the Plain VAE result is clearly lower than the other methods, suggesting that latent compression without skip connections is less effective for preserving downstream classification information in this experiment.
 
-## Main Takeaway
+The sample-efficiency result should also be interpreted cautiously. Reaching near-full-data performance at 40–60% of the training set does not prove that fewer labels are always sufficient. It suggests that, for this dataset and classifier, performance begins to plateau before the full training set is used. This motivates further analysis using additional datasets, classifiers, and statistical tests for practical equivalence or non-inferiority.
 
-The main takeaway is:
+## Main Takeaways
+
+The main takeaways are:
 
 > Reconstruction architecture matters. In this experiment, skip-connected VAE and denoising autoencoder reconstructions preserved downstream classification performance much better than a plain VAE, but reconstruction-based inputs did not outperform the original-image baseline.
 
-A second important takeaway is:
-
 > Increasing the number of labeled training images improved balanced accuracy across all methods, confirming that sample size strongly affects downstream classification performance.
+
+> The strongest methods reached near-full-data performance before using the full training split. In particular, Original, Skip VAE, and Denoising AE reached more than 99% of their full-data performance at 60% of the training data.
 
 ## Practical Implication
 
@@ -176,6 +188,8 @@ If reconstruction is used as a preprocessing step, architectures that preserve i
 
 However, reconstruction should not be assumed to improve performance in low-data regimes. Its downstream utility should be evaluated directly across sample-size ratios.
 
+The sample-size analysis suggests that near-full-data performance may be achievable with substantially fewer labeled examples. This is worth further investigation because it may be practically useful even when differences between reconstruction methods are not statistically significant.
+
 ## Limitations
 
 These results should be interpreted with the following limitations:
@@ -184,6 +198,8 @@ These results should be interpreted with the following limitations:
 - Images are resized to `64 x 64`, which may remove fine visual details.
 - The main downstream classifier is fixed, so results may differ with CNN-based classifiers.
 - The reconstruction models were trained with a limited configuration.
+- The experiment uses five random seeds, which is useful but still limited for strong statistical claims.
+- The sample-efficiency analysis is based on observed learning-curve behavior and should be validated with additional datasets or classifiers.
 - The experiment evaluates downstream classification performance, not clinical validity.
 - No clinical conclusions should be drawn from these results.
 
@@ -193,4 +209,8 @@ Across five random seeds, the original-image baseline achieved the strongest ove
 
 The sample-size analysis showed that balanced accuracy improved as more labeled training images were used, confirming the importance of training-set size for downstream classification.
 
+However, the strongest methods reached near-full-data performance before the full training set was used. At 60% of the training split, corresponding to approximately 2,195 training images, Original, Skip VAE, and Denoising AE achieved more than 99% of their full-data performance.
+
 These results support a cautious conclusion: reconstruction can preserve downstream information when the architecture retains sufficient image detail, but reconstruction alone does not guarantee improved classification or better sample efficiency under sample scarcity.
+
+The observed performance plateau suggests that practical sample-efficiency analysis is an important direction for future work, especially for determining whether similar performance can be achieved with fewer labeled training images.
