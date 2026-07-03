@@ -25,7 +25,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--vae-results",
         type=str,
-        default="results/downstream_xray_vae/vae_downstream_results.csv",
+        default="results/downstream_xray_skip_vae/reconstruction_downstream_results.csv",
         help="Raw bootstrap results for VAE-reconstructed images.",
     )
     parser.add_argument(
@@ -37,7 +37,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--vae-summary",
         type=str,
-        default="results/downstream_xray_vae/vae_downstream_summary.csv",
+        default="results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv",
         help="Summary results for VAE-reconstructed images.",
     )
     parser.add_argument(

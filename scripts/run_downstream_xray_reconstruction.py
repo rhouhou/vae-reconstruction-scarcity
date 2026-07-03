@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--config",
         type=str,
-        default="configs/downstream_xray_vae.yaml",
+        default="configs/downstream_xray_skip_vae.yaml",
         help="Path to downstream X-ray VAE YAML config.",
     )
     parser.add_argument(
@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="results/downstream_xray_vae",
+        default="results/downstream_xray_skip_vae",
         help="Directory where outputs will be saved.",
     )
     return parser.parse_args()

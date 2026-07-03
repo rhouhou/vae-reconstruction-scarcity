@@ -322,25 +322,25 @@ Run:
 python scripts/run_downstream_xray_reconstruction.py \
   --config configs/downstream_xray_skip_vae.yaml \
   --data-zip data/raw/test.zip \
-  --output-dir results/downstream_xray_vae
+  --output-dir results/downstream_xray_skip_vae
 ```
 
 Expected outputs:
 
 ```text
-results/downstream_xray_vae/reconstruction_downstream_results.csv
-results/downstream_xray_vae/reconstruction_downstream_summary.csv
-results/downstream_xray_vae/reconstruction_metrics.csv
-results/downstream_xray_vae/reconstruction_training_history.csv
-results/downstream_xray_vae/split_info.csv
+results/downstream_xray_skip_vae/reconstruction_downstream_results.csv
+results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv
+results/downstream_xray_skip_vae/reconstruction_metrics.csv
+results/downstream_xray_skip_vae/reconstruction_training_history.csv
+results/downstream_xray_skip_vae/split_info.csv
 ```
 
 Plot the VAE-reconstructed learning curve:
 
 ```bash
 python scripts/plot_sample_size_curve.py \
-  --summary-csv results/downstream_xray_vae/reconstruction_downstream_summary.csv \
-  --output-path results/downstream_xray_vae/vae_downstream_curve.png \
+  --summary-csv results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
+  --output-path results/downstream_xray_skip_vae/reconstruction_downstream_curve.png \
   --title "VAE-reconstructed X-ray classification under sample scarcity"
 ```
 
@@ -353,9 +353,9 @@ After running both the original-image and VAE-reconstructed pipelines, compare t
 ```bash
 python scripts/compare_original_vs_vae.py \
   --original-results results/downstream_xray_original/original_downstream_results.csv \
-  --vae-results results/downstream_xray_vae/reconstruction_downstream_results.csv \
+  --vae-results results/downstream_xray_skip_vae/reconstruction_downstream_results.csv \
   --original-summary results/downstream_xray_original/original_downstream_summary.csv \
-  --vae-summary results/downstream_xray_vae/reconstruction_downstream_summary.csv \
+  --vae-summary results/downstream_xray_skip_vae/reconstruction_downstream_summary.csv \
   --output-dir results/comparison_original_vs_vae
 ```
 
