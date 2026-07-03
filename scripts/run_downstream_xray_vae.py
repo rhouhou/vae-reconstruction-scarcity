@@ -21,7 +21,7 @@ from vae_scarcity.evaluation.sample_size import (
     bootstrap_sample_size_sweep,
     summarize_sample_size_sweep,
 )
-from vae_scarcity.models.vae import build_reconstruction_model
+from vae_scarcity.models.reconstruction import build_reconstruction_model
 from vae_scarcity.training.vae_training import reconstruct_images, train_vae
 
 
