@@ -355,3 +355,36 @@ def build_plain_vae(
         kl_weight=kl_weight,
         name="plain_vae",
     )
+
+def build_vae_model(
+    model_type: str = "skip_vae",
+    image_shape: tuple[int, int, int] = (64, 64, 3),
+    latent_dim: int = 256,
+    kl_weight: float = 1.0,
+) -> Any:
+    """Build a VAE model by type.
+
+    Supported model types:
+    - skip_vae
+    - plain_vae
+    """
+    normalized_model_type = model_type.lower()
+
+    if normalized_model_type in {"skip_vae", "skip"}:
+        return build_skip_vae(
+            image_shape=image_shape,
+            latent_dim=latent_dim,
+            kl_weight=kl_weight,
+        )
+
+    if normalized_model_type in {"plain_vae", "plain"}:
+        return build_plain_vae(
+            image_shape=image_shape,
+            latent_dim=latent_dim,
+            kl_weight=kl_weight,
+        )
+
+    raise ValueError(
+        f"Unsupported VAE model_type: {model_type}. "
+        "Supported values are: skip_vae, plain_vae."
+    )

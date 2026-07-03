@@ -13,6 +13,7 @@ data:
   color_mode: rgb
 
 vae:
+  model_type: skip_vae
   latent_dim: 64
   kl_weight: 1.0
   batch_size: 32

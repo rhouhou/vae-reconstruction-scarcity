@@ -21,7 +21,7 @@ from vae_scarcity.evaluation.sample_size import (
     bootstrap_sample_size_sweep,
     summarize_sample_size_sweep,
 )
-from vae_scarcity.models.vae import build_skip_vae
+from vae_scarcity.models.vae import build_vae_model
 from vae_scarcity.training.vae_training import reconstruct_images, train_vae
 
 
@@ -93,7 +93,8 @@ def main() -> None:
     channels = X_train.shape[-1]
     image_shape = (image_size[0], image_size[1], channels)
 
-    model = build_skip_vae(
+    model = build_vae_model(
+        model_type=vae_config.get("model_type", "skip_vae"),
         image_shape=image_shape,
         latent_dim=int(vae_config["latent_dim"]),
         kl_weight=float(vae_config["kl_weight"]),
@@ -148,6 +149,7 @@ def main() -> None:
         "n_val": len(X_val),
         "n_test": len(X_test),
         "classes": ",".join(data_config["classes"]),
+        "vae_model_type": vae_config.get("model_type", "skip_vae"),
     }
 
     results_path = output_dir / "vae_downstream_results.csv"
