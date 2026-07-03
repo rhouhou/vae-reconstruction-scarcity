@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "VAE Reconstruction Under Sample Scarcity"
+message: "If you use this repository, please cite it using the metadata in this file."
+type: software
+authors:
+  - family-names: "Houhou"
+    given-names: "Rola"
+repository-code: "https://github.com/rhouhou/vae-reconstruction-scarcity"
+abstract: "A reproducible experimental framework for evaluating VAE and autoencoder reconstruction strategies for downstream X-ray classification under sample scarcity."
+keywords:
+  - variational autoencoder
+  - sample scarcity
+  - biomedical imaging
+  - X-ray classification
+  - reconstruction
+  - autoencoder
+license: MIT
+version: "0.1.0"
+date-released: 2026-07-03
