@@ -160,10 +160,10 @@ def main() -> None:
         "reconstruction_model_type": reconstruction_config.get("model_type", "skip_vae"),
     }
 
-    results_path = output_dir / "vae_downstream_results.csv"
-    summary_path = output_dir / "vae_downstream_summary.csv"
-    reconstruction_metrics_path = output_dir / "vae_reconstruction_metrics.csv"
-    history_path = output_dir / "vae_training_history.csv"
+    results_path = output_dir / "reconstruction_downstream_results.csv"
+    summary_path = output_dir / "reconstruction_downstream_summary.csv"
+    reconstruction_metrics_path = output_dir / "reconstruction_metrics.csv"
+    history_path = output_dir / "reconstruction_training_history.csv"
     split_path = output_dir / "split_info.csv"
 
     results.to_csv(results_path, index=False)

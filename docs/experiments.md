@@ -142,10 +142,10 @@ Purpose:
 Expected outputs:
 
 ```text
-results/downstream_xray_vae/vae_downstream_results.csv
-results/downstream_xray_vae/vae_downstream_summary.csv
-results/downstream_xray_vae/vae_reconstruction_metrics.csv
-results/downstream_xray_vae/vae_training_history.csv
+results/downstream_xray_vae/reconstruction_downstream_results.csv
+results/downstream_xray_vae/reconstruction_downstream_summary.csv
+results/downstream_xray_vae/reconstruction_metrics.csv
+results/downstream_xray_vae/reconstruction_training_history.csv
 results/downstream_xray_vae/split_info.csv
 ```
 
@@ -153,7 +153,7 @@ Generate the figure:
 
 ```bash
 python scripts/plot_sample_size_curve.py \
-  --summary-csv results/downstream_xray_vae/vae_downstream_summary.csv \
+  --summary-csv results/downstream_xray_vae/reconstruction_downstream_summary.csv \
   --output-path results/downstream_xray_vae/vae_downstream_curve.png \
   --title "VAE-reconstructed X-ray classification under sample scarcity"
 ```
@@ -167,9 +167,9 @@ After running both X-ray workflows, compare original-image and VAE-reconstructed
 ```bash
 python scripts/compare_original_vs_vae.py \
   --original-results results/downstream_xray_original/original_downstream_results.csv \
-  --vae-results results/downstream_xray_vae/vae_downstream_results.csv \
+  --vae-results results/downstream_xray_vae/reconstruction_downstream_results.csv \
   --original-summary results/downstream_xray_original/original_downstream_summary.csv \
-  --vae-summary results/downstream_xray_vae/vae_downstream_summary.csv \
+  --vae-summary results/downstream_xray_vae/reconstruction_downstream_summary.csv \
   --output-dir results/comparison_original_vs_vae
 ```
 
