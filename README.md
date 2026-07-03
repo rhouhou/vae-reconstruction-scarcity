@@ -2,95 +2,403 @@
 
 ![CI](https://github.com/rhouhou/vae-reconstruction-scarcity/actions/workflows/ci.yml/badge.svg)
 
-This repository studies how variational autoencoder (VAE) reconstruction behaves when training data are limited, and how VAE-reconstructed biomedical images affect downstream classification under sample scarcity.
+This repository studies whether variational autoencoder (VAE) reconstruction can improve downstream biomedical image classification under limited training data.
 
-The project combines two related research directions:
+The project focuses on X-ray image classification under sample scarcity. It compares classifiers trained on original images with classifiers trained on VAE-reconstructed images across different training sample-size ratios.
 
-1. **Reconstruction under sample scarcity**  
-   Evaluating how well a VAE can reconstruct images when only limited training data are available.
-
-2. **Downstream classification under sample scarcity**  
-   Comparing classifiers trained on original images versus VAE-reconstructed images across different training sample sizes.
-
-The goal is to build a clean, reproducible, and portfolio-ready research project around VAE reconstruction, uncertainty, learning curves, and biomedical image classification.
+This repository is intended for research, education, and portfolio demonstration. It is not intended for clinical diagnosis or medical deployment.
 
 ---
 
-## Motivation
+## Project Idea
 
-Biomedical imaging tasks often suffer from limited labeled data. In low-data regimes, machine learning models can become unstable, overfit, or require more labeled examples than are practically available.
+Biomedical imaging datasets are often limited, imbalanced, or difficult to label. In low-data regimes, classifiers may overfit or become unstable.
 
-This project explores whether VAE-based reconstruction can act as a learned denoising, compression, or regularization step before downstream classification.
+This project investigates the following question:
 
-The central research question is:
+> Can VAE-reconstructed X-ray images improve downstream classification stability or sample efficiency when labeled training data are scarce?
 
-> Can VAE-reconstructed biomedical images improve reconstruction stability and downstream classification performance when labeled training data are scarce?
+The current implementation supports:
 
----
-
-## Project Overview
-
-The repository is organized around two experiment tracks.
-
-### Track 1: VAE Reconstruction
-
-This track evaluates the VAE as an image reconstruction model.
-
-The basic pipeline is:
-
-```text
-input image -> VAE encoder -> latent representation -> VAE decoder -> reconstructed image
-```
-
-Evaluation metrics include:
-
-- Mean Squared Error (MSE)
-- Mean Absolute Error (MAE)
-- Structural Similarity Index (SSIM)
-- Peak Signal-to-Noise Ratio (PSNR)
-- Reconstruction stability under perturbations
-- Optional uncertainty estimation
+- synthetic downstream smoke experiments
+- synthetic VAE reconstruction smoke experiments
+- original-image X-ray downstream baseline
+- VAE-reconstructed X-ray downstream pipeline
+- original vs VAE comparison
+- bootstrap sample-size sweeps
+- balanced accuracy evaluation
+- reconstruction quality metrics
+- legacy result documentation
 
 ---
 
-### Track 2: Classification on Original vs Reconstructed Images
+## Current Status
 
-This track compares downstream classification performance using:
+Implemented:
+
+- Reusable image loading from zip files
+- Reproducible train/validation/test splitting
+- Reconstruction metrics: MSE, MAE, SSIM, PSNR
+- Downstream classification metrics
+- Random Forest and SVM classifier builders
+- Bootstrap sample-size sweep
+- Skip-connected VAE model
+- VAE training and reconstruction utilities
+- Synthetic downstream smoke test
+- Synthetic reconstruction smoke test
+- Real X-ray original-image baseline script
+- Real X-ray VAE-reconstructed pipeline script
+- Original vs VAE comparison script
+- GitHub Actions CI
+- Legacy code and preliminary legacy figures
+
+Planned:
+
+- Plain VAE without skip connections
+- Denoising autoencoder baseline
+- CNN classifier baseline
+- Cleaner final experiment table
+- Final reproducible result figures
+- More extensive statistical analysis
+
+---
+
+## Repository Structure
 
 ```text
-original images -> classifier -> balanced accuracy
+vae-reconstruction-scarcity/
+├── configs/
+│   ├── downstream_smoke.yaml
+│   ├── downstream_xray_original.yaml
+│   ├── downstream_xray_vae.yaml
+│   └── reconstruction_smoke.yaml
+├── legacy/
+│   └── old_xray_vae/
+├── results/
+│   ├── figures/
+│   │   └── legacy/
+│   └── metrics/
+├── scripts/
+│   ├── compare_original_vs_vae.py
+│   ├── make_smoke_downstream_figure.py
+│   ├── plot_sample_size_curve.py
+│   ├── run_downstream_xray_original.py
+│   ├── run_downstream_xray_vae.py
+│   ├── run_smoke_downstream.py
+│   └── run_smoke_reconstruction.py
+├── src/
+│   └── vae_scarcity/
+│       ├── data/
+│       │   ├── loaders.py
+│       │   └── splits.py
+│       ├── evaluation/
+│       │   ├── downstream.py
+│       │   ├── reconstruction.py
+│       │   └── sample_size.py
+│       ├── models/
+│       │   ├── classifiers.py
+│       │   └── vae.py
+│       ├── training/
+│       │   └── vae_training.py
+│       └── plotting.py
+├── tests/
+├── README.md
+├── LICENSE
+├── pyproject.toml
+└── requirements.txt
 ```
 
-and:
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/rhouhou/vae-reconstruction-scarcity.git
+cd vae-reconstruction-scarcity
+```
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install the package and development dependencies:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -e ".[dev]"
+```
+
+For VAE training and reconstruction scripts, install the optional deep learning dependency:
+
+```bash
+python -m pip install -e ".[deep-learning]"
+```
+
+Run tests:
+
+```bash
+python -m pytest -q
+```
+
+---
+
+## Dataset
+
+The real X-ray experiments expect a local zip file containing class folders.
+
+The dataset is not included in this repository.
+
+Expected folder structure inside the zip:
 
 ```text
-original images -> trained VAE -> reconstructed images -> classifier -> balanced accuracy
+COVID/
+NORMAL/
+PNEUMONIA/
 ```
 
-The experiment varies the amount of available training data using sample-size ratios such as:
+or, if the images are inside a root folder:
 
 ```text
-0.05, 0.10, 0.15, ..., 0.80
+some_root_folder/
+├── COVID/
+├── NORMAL/
+└── PNEUMONIA/
 ```
 
-For each sample-size ratio, classifiers are trained and evaluated repeatedly using bootstrap resampling.
+The class names and optional root folder are configured in:
 
-Supported or planned classifiers include:
+```text
+configs/downstream_xray_original.yaml
+configs/downstream_xray_vae.yaml
+```
 
-- Random Forest
-- Convolutional Neural Network
-- Support Vector Machine
+Example configuration:
 
-The main downstream metric is:
+```yaml
+data:
+  image_size: [64, 64]
+  classes:
+    - COVID
+    - NORMAL
+    - PNEUMONIA
+  root_dir: null
+  test_size: 0.20
+  val_size: 0.10
+  normalize: true
+  color_mode: rgb
+```
 
-- Balanced accuracy
+If your zip contains a root directory, change `root_dir`.
 
-Additional analyses include:
+Example:
 
-- 95% confidence intervals
-- Statistical comparison between original and reconstructed pipelines
-- Learning-curve fitting
-- Sample-efficiency analysis
+```yaml
+root_dir: COVID19_Pneumonia_Normal_Chest_Xray_PA_Dataset
+```
+
+Datasets, model checkpoints, and generated experiment outputs are ignored by Git and should not be committed.
+
+---
+
+## Reproducible Workflows
+
+### 1. Synthetic downstream smoke test
+
+This test does not require real data. It creates a small synthetic two-class image dataset and runs a Random Forest sample-size sweep.
+
+```bash
+python scripts/run_smoke_downstream.py \
+  --config configs/downstream_smoke.yaml \
+  --output-dir results/smoke_downstream
+```
+
+Generate a figure:
+
+```bash
+python scripts/make_smoke_downstream_figure.py \
+  --summary-csv results/smoke_downstream/downstream_smoke_summary.csv \
+  --output-path results/smoke_downstream/downstream_smoke_curve.png
+```
+
+Expected outputs:
+
+```text
+results/smoke_downstream/downstream_smoke_results.csv
+results/smoke_downstream/downstream_smoke_summary.csv
+results/smoke_downstream/downstream_smoke_curve.png
+```
+
+---
+
+### 2. Synthetic VAE reconstruction smoke test
+
+This test creates synthetic images, trains the skip-connected VAE briefly, reconstructs test images, and saves reconstruction metrics.
+
+Requires TensorFlow:
+
+```bash
+python -m pip install -e ".[deep-learning]"
+```
+
+Run:
+
+```bash
+python scripts/run_smoke_reconstruction.py \
+  --config configs/reconstruction_smoke.yaml \
+  --output-dir results/smoke_reconstruction
+```
+
+Expected outputs:
+
+```text
+results/smoke_reconstruction/reconstruction_smoke_metrics.csv
+results/smoke_reconstruction/reconstruction_smoke_history.csv
+```
+
+---
+
+### 3. Original X-ray downstream baseline
+
+This runs the downstream sample-size sweep on original X-ray images.
+
+```bash
+python scripts/run_downstream_xray_original.py \
+  --config configs/downstream_xray_original.yaml \
+  --data-zip data/raw/test.zip \
+  --output-dir results/downstream_xray_original
+```
+
+Expected outputs:
+
+```text
+results/downstream_xray_original/original_downstream_results.csv
+results/downstream_xray_original/original_downstream_summary.csv
+results/downstream_xray_original/split_info.csv
+```
+
+Plot the original-image learning curve:
+
+```bash
+python scripts/plot_sample_size_curve.py \
+  --summary-csv results/downstream_xray_original/original_downstream_summary.csv \
+  --output-path results/downstream_xray_original/original_downstream_curve.png \
+  --title "Original X-ray classification under sample scarcity"
+```
+
+---
+
+### 4. VAE-reconstructed X-ray downstream pipeline
+
+This trains a VAE on the X-ray training split, reconstructs train and test images, and runs the same downstream sample-size sweep on reconstructed images.
+
+Requires TensorFlow:
+
+```bash
+python -m pip install -e ".[deep-learning]"
+```
+
+Run:
+
+```bash
+python scripts/run_downstream_xray_vae.py \
+  --config configs/downstream_xray_vae.yaml \
+  --data-zip data/raw/test.zip \
+  --output-dir results/downstream_xray_vae
+```
+
+Expected outputs:
+
+```text
+results/downstream_xray_vae/vae_downstream_results.csv
+results/downstream_xray_vae/vae_downstream_summary.csv
+results/downstream_xray_vae/vae_reconstruction_metrics.csv
+results/downstream_xray_vae/vae_training_history.csv
+results/downstream_xray_vae/split_info.csv
+```
+
+Plot the VAE-reconstructed learning curve:
+
+```bash
+python scripts/plot_sample_size_curve.py \
+  --summary-csv results/downstream_xray_vae/vae_downstream_summary.csv \
+  --output-path results/downstream_xray_vae/vae_downstream_curve.png \
+  --title "VAE-reconstructed X-ray classification under sample scarcity"
+```
+
+---
+
+### 5. Original vs VAE comparison
+
+After running both the original-image and VAE-reconstructed pipelines, compare them:
+
+```bash
+python scripts/compare_original_vs_vae.py \
+  --original-results results/downstream_xray_original/original_downstream_results.csv \
+  --vae-results results/downstream_xray_vae/vae_downstream_results.csv \
+  --original-summary results/downstream_xray_original/original_downstream_summary.csv \
+  --vae-summary results/downstream_xray_vae/vae_downstream_summary.csv \
+  --output-dir results/comparison_original_vs_vae
+```
+
+Expected outputs:
+
+```text
+results/comparison_original_vs_vae/combined_downstream_results.csv
+results/comparison_original_vs_vae/combined_downstream_summary.csv
+results/comparison_original_vs_vae/comparison_by_sample_ratio.csv
+results/comparison_original_vs_vae/original_vs_vae_curve.png
+```
+
+---
+
+## Metrics
+
+### Reconstruction Metrics
+
+| Metric | Description |
+|---|---|
+| MSE | Mean squared pixel-wise reconstruction error |
+| MAE | Mean absolute pixel-wise reconstruction error |
+| SSIM | Structural similarity between original and reconstructed image |
+| PSNR | Peak signal-to-noise ratio |
+
+### Classification Metrics
+
+| Metric | Description |
+|---|---|
+| Balanced accuracy | Average recall across classes |
+| Confidence interval | Bootstrap-based uncertainty around performance |
+| Learning curve | Performance as a function of training sample-size ratio |
+| Mann-Whitney U test | Non-parametric comparison between original and VAE pipelines |
+
+---
+
+## Experiment Design
+
+The current implemented comparison is:
+
+| Pipeline | Description |
+|---|---|
+| Original images | Classifier trained directly on original X-ray images |
+| Skip-connected VAE | Images reconstructed using a skip-connected VAE before classification |
+
+Planned future comparison:
+
+| Pipeline | Purpose |
+|---|---|
+| Raw-image classifier baseline | Measures performance without reconstruction |
+| Plain VAE without skip connections | Tests whether latent compression alone helps |
+| Skip-connected VAE | Tests the current reconstruction model |
+| Denoising autoencoder baseline | Tests whether generic denoising/reconstruction helps |
+| CNN classifier baseline | Adds a deep classifier comparison |
+
+This is important because a skip-connected VAE may preserve image details through skip connections. A plain VAE and denoising autoencoder baseline will help determine whether downstream effects are due to the VAE latent space, denoising, or the skip-connected architecture.
 
 ---
 
@@ -98,23 +406,14 @@ Additional analyses include:
 
 This repository includes preliminary figures from an earlier exploratory X-ray VAE experiment.
 
-In that earlier version, a VAE was trained to reconstruct biomedical X-ray images. Downstream classifiers were then trained and evaluated on:
+In the earlier version, a VAE was trained to reconstruct biomedical X-ray images. Downstream classifiers were then trained and evaluated on:
 
 - original images
 - VAE-reconstructed images
 
 The goal was to study whether VAE reconstruction could improve downstream classification stability under limited training data.
 
-The preliminary results suggested that reconstructed images may improve classifier performance or stability in some low-sample regimes. However, these results should be interpreted carefully because they come from an earlier exploratory pipeline.
-
-The cleaned implementation in this repository is intended to reproduce and extend those experiments with:
-
-- configurable paths
-- reusable modules
-- smoke tests
-- clearer metrics
-- bootstrap confidence intervals
-- reproducible experiment scripts
+These results are exploratory and should not be treated as final scientific evidence. The cleaned implementation in this repository is intended to reproduce and extend those experiments with configurable paths, reusable modules, smoke tests, clearer metrics, bootstrap confidence intervals, and reproducible experiment scripts.
 
 ### Legacy Figures
 
@@ -141,8 +440,6 @@ The cleaned implementation in this repository is intended to reproduce and exten
 
 ![CNN VAE learning curve](results/figures/legacy/CNN_VAE_LearningCurve.png)
 
-### Legacy Code
-
 The legacy scripts are stored in:
 
 ```text
@@ -153,323 +450,30 @@ These files are kept for transparency and historical reference. They may contain
 
 ---
 
-## Repository Structure
-
-Planned cleaned structure:
-
-```text
-vae-reconstruction-scarcity/
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── pyproject.toml
-├── .gitignore
-├── configs/
-│   ├── reconstruction_smoke.yaml
-│   ├── downstream_xray_smoke.yaml
-│   └── downstream_xray_full.yaml
-├── src/
-│   └── vae_scarcity/
-│       ├── __init__.py
-│       ├── data/
-│       │   ├── loaders.py
-│       │   └── splits.py
-│       ├── models/
-│       │   ├── vae.py
-│       │   └── classifiers.py
-│       ├── evaluation/
-│       │   ├── reconstruction.py
-│       │   ├── downstream.py
-│       │   ├── statistics.py
-│       │   └── learning_curves.py
-│       ├── experiments/
-│       │   ├── run_reconstruction_sweep.py
-│       │   └── run_downstream_sweep.py
-│       └── plotting.py
-├── scripts/
-│   ├── run_smoke_reconstruction.py
-│   ├── run_smoke_downstream.py
-│   └── make_figures.py
-├── results/
-│   ├── figures/
-│   └── metrics/
-├── legacy/
-│   └── old_xray_vae/
-└── tests/
-    ├── test_vae_forward.py
-    ├── test_metrics.py
-    └── test_downstream_smoke.py
-```
-
----
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/rhouhou/vae-reconstruction-scarcity.git
-cd vae-reconstruction-scarcity
-```
-
-Create and activate a virtual environment:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows:
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-pip install -e .
-```
-
----
-
-## Quick Start
-
-### Reconstruction smoke test
-
-```bash
-python scripts/run_smoke_reconstruction.py \
-  --config configs/reconstruction_smoke.yaml \
-  --output-dir results/smoke_reconstruction
-```
-
-### Downstream classification smoke test
-
-```bash
-python scripts/run_smoke_downstream.py \
-  --config configs/downstream_xray_smoke.yaml \
-  --data-zip data/raw/xray_dataset.zip \
-  --output-dir results/smoke_downstream
-```
-
-The smoke tests are intended to verify that the pipeline runs end-to-end. They are not intended to produce final scientific results.
-
----
-
-## Current Runnable Pipeline
-
-The repository currently includes a lightweight downstream classification smoke test.
-
-This smoke test creates a small synthetic two-class image dataset, runs a bootstrap sample-size sweep using a Random Forest classifier, saves CSV results, and generates a sample-size curve.
-
-Run the smoke experiment:
-
-```bash
-python scripts/run_smoke_downstream.py \
-  --config configs/downstream_smoke.yaml \
-  --output-dir results/smoke_downstream
-```
-
-Generate the figure:
-
-```bash
-python scripts/make_smoke_downstream_figure.py \
-  --summary-csv results/smoke_downstream/downstream_smoke_summary.csv \
-  --output-path results/smoke_downstream/downstream_smoke_curve.png
-```
-
-Run tests:
-
-```bash
-python -m pytest -q
-```
-
-Expected outputs:
-
-```text
-results/smoke_downstream/downstream_smoke_results.csv
-results/smoke_downstream/downstream_smoke_summary.csv
-results/smoke_downstream/downstream_smoke_curve.png
-```
-
-The generated smoke outputs are ignored by Git because they are experiment artifacts.
-
----
-
-## Full Downstream Experiment
-
-A full sample-scarcity sweep can be run with:
-
-```bash
-python -m vae_scarcity.experiments.run_downstream_sweep \
-  --config configs/downstream_xray_full.yaml \
-  --data-zip data/raw/xray_dataset.zip \
-  --output-dir results/downstream_xray_full
-```
-
-The full experiment is expected to:
-
-1. Load and preprocess the image dataset.
-2. Train or load a VAE.
-3. Reconstruct training and test images.
-4. Train classifiers on original images.
-5. Train classifiers on reconstructed images.
-6. Evaluate balanced accuracy across sample-size ratios.
-7. Save metrics, confidence intervals, statistical tests, and figures.
-
----
-
-## Example Configuration
-
-Example downstream experiment configuration:
-
-```yaml
-seed: 42
-
-data:
-  image_size: [64, 64]
-  classes:
-    - COVID19
-    - NORMAL
-    - PNEUMONIA
-
-vae:
-  model_type: skip_vae
-  latent_dim: 256
-  batch_size: 64
-  epochs: 100
-  checkpoint_path: models/vae_xray
-
-experiment:
-  sample_ratios: [0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80]
-  n_bootstrap: 20
-  classifiers:
-    - random_forest
-    - cnn
-
-metrics:
-  reconstruction:
-    - mse
-    - mae
-    - ssim
-    - psnr
-  downstream:
-    - balanced_accuracy
-
-output:
-  save_predictions: false
-  save_reconstructions: true
-  save_figures: true
-```
-
----
-
-## Metrics
-
-### Reconstruction Metrics
-
-| Metric | Description |
-|---|---|
-| MSE | Mean squared pixel-wise reconstruction error |
-| MAE | Mean absolute pixel-wise reconstruction error |
-| SSIM | Structural similarity between original and reconstructed image |
-| PSNR | Peak signal-to-noise ratio |
-
-### Classification Metrics
-
-| Metric | Description |
-|---|---|
-| Balanced accuracy | Average recall across classes |
-| Confidence interval | Bootstrap-based uncertainty around performance |
-| Learning curve | Performance as a function of training sample size |
-| Statistical test | Comparison between original and reconstructed pipelines |
-
----
-
-## Learning-Curve Analysis
-
-The downstream classification experiments can be summarized using learning curves.
-
-A typical inverse power-law model is:
-
-```text
-error(n) = a * n^(-b) + c
-```
-
-where:
-
-- `n` is the training sample size or sample-size ratio
-- `a` controls the initial error scale
-- `b` controls the learning rate
-- `c` estimates the irreducible error or performance floor
-
-This allows comparison between the original-image pipeline and the VAE-reconstructed-image pipeline.
-
----
-
-## Legacy Code
-
-The folder:
-
-```text
-legacy/old_xray_vae/
-```
-
-contains earlier exploratory scripts from the original VAE/X-ray project.
-
-These files are kept for transparency and historical reference. They are not the recommended entry point for running experiments.
-
-The cleaned and reusable implementation should live under:
-
-```text
-src/vae_scarcity/
-```
-
----
-
-## Current Status
-
-This repository is under active cleanup and restructuring.
-
-Planned improvements include:
-
-- Refactor legacy scripts into reusable modules.
-- Replace hard-coded local and Colab paths with configuration files.
-- Add reproducible smoke tests.
-- Add CI with GitHub Actions.
-- Add cleaned reconstruction and downstream experiment scripts.
-- Add full result tables and final figures.
-- Add experiment cards for completed runs.
-- Add clear documentation for datasets, checkpoints, and limitations.
-
----
-
 ## Limitations
-
-This project is currently intended for research, education, and portfolio demonstration.
 
 Important limitations:
 
-- Datasets are not included in the repository.
+- The dataset is not included in the repository.
 - Trained model checkpoints are not included.
-- Large generated results are not included.
-- Legacy figures are preliminary and should not be interpreted as final scientific evidence.
-- Performance may depend strongly on dataset quality, class imbalance, preprocessing, VAE architecture, and classifier choice.
-- The VAE may remove diagnostically relevant details if reconstruction quality is insufficient.
-- Reconstructed images should not be assumed to be clinically faithful without careful validation.
+- Generated experiment outputs are not included.
+- Legacy figures are preliminary.
+- VAE reconstructions may remove diagnostically relevant details.
+- Reconstructed images should not be assumed to be clinically faithful.
+- Results may depend on dataset source, preprocessing, class imbalance, VAE architecture, and classifier choice.
+- This project does not provide clinical validation.
 
 ---
 
 ## Reproducibility Notes
 
-To make experiments reproducible, cleaned runs should record:
+Cleaned experiment runs should record:
 
-- random seed
-- dataset version
+- dataset source and version
+- class names
 - train/validation/test split
-- image preprocessing steps
+- image size and preprocessing
+- random seed
 - VAE architecture
 - latent dimension
 - training epochs
@@ -477,8 +481,31 @@ To make experiments reproducible, cleaned runs should record:
 - classifier type
 - sample-size ratios
 - number of bootstrap iterations
-- evaluation metrics
+- reconstruction metrics
+- downstream classification metrics
 - software versions
+
+---
+
+## Development
+
+Run all tests:
+
+```bash
+python -m pytest -q
+```
+
+Run the package import test:
+
+```bash
+python -c "import vae_scarcity; print(vae_scarcity.__version__)"
+```
+
+Check whether TensorFlow is installed:
+
+```bash
+python -c "import tensorflow as tf; print(tf.__version__)"
+```
 
 ---
 
@@ -501,8 +528,6 @@ See the `LICENSE` file for details.
 ---
 
 ## Suggested Citation
-
-If you use or build on this repository, please cite it as:
 
 ```text
 Houhou, R. VAE Reconstruction Under Sample Scarcity.
