@@ -12,7 +12,7 @@ data:
   normalize: true
   color_mode: rgb
 
-vae:
+reconstruction:
   model_type: plain_vae
   latent_dim: 64
   kl_weight: 1.0

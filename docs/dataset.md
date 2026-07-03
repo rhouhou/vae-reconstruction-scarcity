@@ -164,7 +164,7 @@ python scripts/run_downstream_xray_original.py \
   --output-dir results/downstream_xray_original
 ```
 
-## Running the VAE-Reconstructed X-ray Pipeline
+## Running the Reconstruction-Based X-ray Pipeline
 
 This workflow requires TensorFlow:
 

@@ -67,7 +67,14 @@ def main() -> None:
 
     seed = int(config["seed"])
     data_config = config["data"]
-    vae_config = config["vae"]
+    reconstruction_config = config.get("reconstruction", config.get("vae"))
+
+    if reconstruction_config is None:
+        raise KeyError(
+            "Config must contain a 'reconstruction' section. "
+            "The old 'vae' section is also supported for backward compatibility."
+        )
+    
     experiment_config = config["experiment"]
     classifier_config = config["classifier"]
 
@@ -94,33 +101,33 @@ def main() -> None:
     image_shape = (image_size[0], image_size[1], channels)
 
     model = build_reconstruction_model(
-        model_type=vae_config.get("model_type", "skip_vae"),
+        model_type=reconstruction_config.get("model_type", "skip_vae"),
         image_shape=image_shape,
-        latent_dim=int(vae_config["latent_dim"]),
-        kl_weight=float(vae_config.get("kl_weight", 1.0)),
-        noise_stddev=float(vae_config.get("noise_stddev", 0.10)),
+        latent_dim=int(reconstruction_config["latent_dim"]),
+        kl_weight=float(reconstruction_config.get("kl_weight", 1.0)),
+        noise_stddev=float(reconstruction_config.get("noise_stddev", 0.10)),
     )
 
     history = train_vae(
         model=model,
         X_train=X_train,
         X_val=X_val,
-        batch_size=int(vae_config["batch_size"]),
-        epochs=int(vae_config["epochs"]),
-        learning_rate=float(vae_config["learning_rate"]),
-        patience=int(vae_config["patience"]),
+        batch_size=int(reconstruction_config["batch_size"]),
+        epochs=int(reconstruction_config["epochs"]),
+        learning_rate=float(reconstruction_config["learning_rate"]),
+        patience=int(reconstruction_config["patience"]),
     )
 
     X_train_vae = reconstruct_images(
         model=model,
         images=X_train,
-        batch_size=int(vae_config["batch_size"]),
+        batch_size=int(reconstruction_config["batch_size"]),
     )
 
     X_test_vae = reconstruct_images(
         model=model,
         images=X_test,
-        batch_size=int(vae_config["batch_size"]),
+        batch_size=int(reconstruction_config["batch_size"]),
     )
 
     reconstruction_metrics = compute_reconstruction_metrics(
@@ -150,7 +157,7 @@ def main() -> None:
         "n_val": len(X_val),
         "n_test": len(X_test),
         "classes": ",".join(data_config["classes"]),
-        "reconstruction_model_type": vae_config.get("model_type", "skip_vae"),
+        "reconstruction_model_type": reconstruction_config.get("model_type", "skip_vae"),
     }
 
     results_path = output_dir / "vae_downstream_results.csv"

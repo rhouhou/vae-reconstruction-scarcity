@@ -23,7 +23,7 @@ The current implementation supports:
 - synthetic downstream smoke experiments
 - synthetic VAE reconstruction smoke experiments
 - original-image X-ray downstream baseline
-- VAE-reconstructed X-ray downstream pipeline
+- reconstruction-based X-ray downstream pipeline
 - original vs VAE comparison
 - bootstrap sample-size sweeps
 - balanced accuracy evaluation
@@ -83,7 +83,7 @@ vae-reconstruction-scarcity/
 │   ├── make_smoke_downstream_figure.py
 │   ├── plot_sample_size_curve.py
 │   ├── run_downstream_xray_original.py
-│   ├── run_downstream_xray_vae.py
+│   ├── run_downstream_xray_reconstruction.py
 │   ├── run_smoke_downstream.py
 │   └── run_smoke_reconstruction.py
 ├── src/
@@ -302,9 +302,9 @@ python scripts/plot_sample_size_curve.py \
 
 ---
 
-### 4. VAE-reconstructed X-ray downstream pipeline
+### 4. Reconstruction-based X-ray downstream pipeline
 
-This trains a VAE on the X-ray training split, reconstructs train and test images, and runs the same downstream sample-size sweep on reconstructed images.
+This trains a reconstruction model on the X-ray training split, reconstructs train and test images, and runs the same downstream sample-size sweep on reconstructed images.
 
 Requires TensorFlow:
 

@@ -113,9 +113,9 @@ python scripts/plot_sample_size_curve.py \
 
 ---
 
-## 4. VAE-Reconstructed X-ray Pipeline
+## 4. Reconstruction-Based X-ray Pipeline
 
-This workflow trains a VAE on the X-ray training split, reconstructs train and test images, and trains a classifier on the reconstructed images.
+This workflow trains a reconstruction model on the X-ray training split, reconstructs train and test images, and trains a classifier on the reconstructed images.
 
 This workflow requires TensorFlow:
 
